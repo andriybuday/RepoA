@@ -2,10 +2,8 @@
 CurrentPath=$(pwd)
 SynchLocation="/C/git-synch/"
 BundleLocation="/C/git-synch/project.bundle"
-
-RemoteA="https://github.com/andriybuday/RepoA_D.git"
+RemoteA="https://github.com/andriybuday/RepoA_NOT_AVAILABLE.git"
 RepoA="RepoA"
-
 RemoteB="https://github.com/andriybuday/RepoB.git"
 RepoB="RepoB"
 
@@ -32,19 +30,19 @@ echo "Synchronizing from " $BundleLocation " into " $RemoteAvailable
 
 # fetch from $RemoteAvailable
 # slow
-#rm -rf $SynchLocation$RepoThis
-#git clone $RemoteAvailable $SynchLocation$RepoThis
+rm -rf $SynchLocation$RepoThis
+git clone $RemoteAvailable $SynchLocation$RepoThis
 
-# faster
-if [ -d $SynchLocation$RepoThis ]; then
-  cd $SynchLocation$RepoThis
-  git fetch
-  git clean -fdx
-  git reset --hard
-  echo $SynchLocation$RepoThis"; git fetch; git reset --hard;"
-else
-  git clone $RemoteAvailable $SynchLocation$RepoThis
-fi
+# faster (requires fixing)
+#if [ -d $SynchLocation$RepoThis ]; then
+#  cd $SynchLocation$RepoThis
+#  git fetch
+#  git clean -fdx
+#  git reset --hard
+#  echo $SynchLocation$RepoThis"; git fetch; git reset --hard;"
+#else
+#  git clone $RemoteAvailable $SynchLocation$RepoThis
+#fi
 
 # fetch from bundle
 rm -rf $SynchLocation$RepoOther
@@ -53,12 +51,13 @@ cd $SynchLocation$RepoOther
 git fetch
 git checkout master
 
+# perform synchronization using merge with --allow-unrelated-histories
 cd $SynchLocation$RepoThis
-
 git remote add $RepoOther $SynchLocation$RepoOther
 git fetch $RepoOther
 if git merge --allow-unrelated-histories $RepoOther/master; then
   if git push; then
+    # bundle is created for future usages
     git bundle create $BundleLocation --branches --tags
     echo ""
     echo "SUCCESS"
@@ -72,4 +71,5 @@ else
   echo "then run this script again to recreate your bundle"
 fi
 git remote remove $RepoOther;
+
 cd $CurrentPath;

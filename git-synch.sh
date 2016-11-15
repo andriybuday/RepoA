@@ -3,10 +3,10 @@ CurrentPath=$(pwd)
 SynchLocation="/C/git-synch/"
 BundleLocation="/C/git-synch/project.bundle"
 
-RemoteA="https://github.com/andriybuday/RepoA.git"
+RemoteA="https://github.com/andriybuday/RepoA_D.git"
 RepoA="RepoA"
 
-RemoteB="https://github.com/andriybuday/RepoB_d.git"
+RemoteB="https://github.com/andriybuday/RepoB.git"
 RepoB="RepoB"
 
 # check what remotes are accessible and
@@ -32,17 +32,19 @@ echo "Synchronizing from " $BundleLocation " into " $RemoteAvailable
 
 # fetch from $RemoteAvailable
 # slow
-rm -rf $SynchLocation$RepoThis
-git clone $RemoteAvailable $SynchLocation$RepoThis
+#rm -rf $SynchLocation$RepoThis
+#git clone $RemoteAvailable $SynchLocation$RepoThis
 
 # faster
-#if [ -d $SynchLocation$RepoThis ]; then
-#  cd $SynchLocation$RepoThis
-#  git clean -fdXx
-#  git pull
-#else
-#  git clone $RemoteAvailable $SynchLocation$RepoThis
-#fi
+if [ -d $SynchLocation$RepoThis ]; then
+  cd $SynchLocation$RepoThis
+  git fetch
+  git clean -fdx
+  git reset --hard
+  echo $SynchLocation$RepoThis"; git fetch; git reset --hard;"
+else
+  git clone $RemoteAvailable $SynchLocation$RepoThis
+fi
 
 # fetch from bundle
 rm -rf $SynchLocation$RepoOther

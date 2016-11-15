@@ -2,31 +2,50 @@
 CurrentPath=$(pwd)
 SynchLocation="/C/git-synch/"
 BundleLocation="/C/git-synch/project.bundle"
-RemoteA="https://github.com/andriybuday/RepoA_df.git"
+
+RemoteA="https://github.com/andriybuday/RepoA.git"
 RepoA="RepoA"
-RemoteB="https://github.com/andriybuday/RepoB.git"
+
+RemoteB="https://github.com/andriybuday/RepoB_d.git"
 RepoB="RepoB"
 
-rm -rf $SynchLocation$RepoA
-rm -rf $SynchLocation$RepoB
-
-if git clone $RemoteA $SynchLocation$RepoA; then
+# check what remotes are accessible and
+# assign local variables accordingly
+git ls-remote --exit-code $RemoteA
+if test $? = 0; then
   RemoteAvailable=$RemoteA
   RepoThis=$RepoA
   RepoOther=$RepoB
 else
-  if git clone $RemoteB $SynchLocation$RepoB; then
+  git ls-remote --exit-code $RemoteB
+  if test $? = 0; then
     RemoteAvailable=$RemoteB
     RepoThis=$RepoB
     RepoOther=$RepoA
   else
-    echo "ERROR: Cannot clone from "$RemoteA" or "$RemoteB
+    echo "ERROR: Cannot access "$RemoteA" or "$RemoteB
     exit 1
   fi
 fi
 
 echo "Synchronizing from " $BundleLocation " into " $RemoteAvailable
 
+# fetch from $RemoteAvailable
+# slow
+rm -rf $SynchLocation$RepoThis
+git clone $RemoteAvailable $SynchLocation$RepoThis
+
+# faster
+#if [ -d $SynchLocation$RepoThis ]; then
+#  cd $SynchLocation$RepoThis
+#  git clean -fdXx
+#  git pull
+#else
+#  git clone $RemoteAvailable $SynchLocation$RepoThis
+#fi
+
+# fetch from bundle
+rm -rf $SynchLocation$RepoOther
 git clone $BundleLocation $SynchLocation$RepoOther
 cd $SynchLocation$RepoOther
 git fetch
@@ -39,7 +58,7 @@ git fetch $RepoOther
 if git merge --allow-unrelated-histories $RepoOther/master; then
   if git push; then
     git bundle create $BundleLocation --branches --tags
-    echo "";
+    echo ""
     echo "SUCCESS"
   else
     echo "ERROR: Cannot push to remote "$RemoteAvailable
@@ -48,6 +67,7 @@ else
   echo ""
   echo "ERROR: Cannot merge "$RepoOther" into "$RepoThis
   echo "Please resolve conflicts in "$SynchLocation$RepoThis" and push to "$RemoteAvailable" manually"
+  echo "then run this script again to recreate your bundle"
 fi
 git remote remove $RepoOther;
 cd $CurrentPath;

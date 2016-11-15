@@ -2,9 +2,9 @@
 CurrentPath=$(pwd)
 SynchLocation="/C/git-synch/"
 BundleLocation="/C/git-synch/project.bundle"
-RemoteA="https://github.com/andriybuday/RepoA.git"
+RemoteA="https://github.com/andriybuday/RepoA_DF.git"
 RepoA="RepoA"
-RemoteB="https://github.com/andriybuday/RepoB_NOACCESS.git"
+RemoteB="https://github.com/andriybuday/RepoB.git"
 RepoB="RepoB"
 
 rm -rf $SynchLocation$RepoA
@@ -20,26 +20,30 @@ else
     RepoThis=$RepoB
     RepoOther=$RepoA
   else
-    echo "ERROR: Cannot clone from "$RemoteA" or "$RemoteB;
-    exit 1;
+    echo "ERROR: Cannot clone from "$RemoteA" or "$RemoteB
+    exit 1
   fi
 fi
 
 echo "Synchronizing from " $BundleLocation " into " $RemoteAvailable
 
-git clone $BundleLocation $SynchLocation$RepoOther;
-cd $SynchLocation$RepoOther;
-git fetch;
-git checkout master;
+git clone $BundleLocation $SynchLocation$RepoOther
+cd $SynchLocation$RepoOther
+git fetch
+git checkout master
 
-cd $SynchLocation$RepoThis;
+cd $SynchLocation$RepoThis
 
-git remote add $RepoOther $SynchLocation$RepoOther;
+git remote add $RepoOther $SynchLocation$RepoOther
 git fetch $RepoOther
 if git merge --allow-unrelated-histories $RepoOther/master; then
-  git push;
-  echo ""
-  echo "SUCCESS"
+  if git push; then
+    git bundle create $BundleLocation --branches --tags
+    echo "";
+    echo "SUCCESS"
+  else
+    echo "ERROR: Cannot push to remote "$RemoteAvailable
+  fi
 else
   echo ""
   echo "ERROR: Cannot merge "$RepoOther" into "$RepoThis

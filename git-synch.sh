@@ -2,7 +2,7 @@
 CurrentPath=$(pwd)
 SynchLocation="/C/git-synch/"
 BundleLocation="/C/git-synch/project.bundle"
-RemoteA="https://github.com/andriybuday/RepoA_DF.git"
+RemoteA="https://github.com/andriybuday/RepoA_HITHERE_ACONFLICT.git"
 RepoA="RepoA"
 RemoteB="https://github.com/andriybuday/RepoB.git"
 RepoB="RepoB"
